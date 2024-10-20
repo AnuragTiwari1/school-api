@@ -1,0 +1,55 @@
+services:
+  #
+  # mysql service
+  #
+  mysql_srv:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: example_db
+      MYSQL_ROOT_PASSWORD: example
+    ports:
+      - 3307:3306
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./conf:/etc/mysql/conf.d
+      - ./logs:/logs
+  #
+  # phpmyadmin service
+  #
+  phpmyadmin_srv:
+    depends_on:
+      - mysql_srv
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql_srv
+    ports:
+      - 8081:80
+
+  #
+  # backend service
+  #
+  backend_srv:
+    build:
+      context: ./api
+      dockerfile: dockerfile.dev
+    depends_on:
+      - mysql_srv
+    environment:
+      MYSQL_HOST_IP: mysql_srv
+      MYSQL_DATABASE: example_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: example
+      MYSQL_PORT: 3306
+      API_PORT: 3000
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api:/api
+    links:
+      - "mysql_srv:database"
+
+volumes:
+  mysql_srv:
+    driver: local

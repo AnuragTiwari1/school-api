@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "paths": {
+      "data": ["./data.ts"]
+    },
+    "types": ["node"]
+  }
+}
